@@ -1,3 +1,32 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "import/first": "error",
+    "import/no-duplicates": "error",
+    "import/no-deprecated": "warn",
+    "import/no-useless-path-segments": "error",
+    "import/newline-after-import": "error",
+    "import/order": [
+      "error",
+      {
+        "pathGroups": [
+          {
+            "pattern": "~*/**",
+            "group": "internal"
+          }
+        ],
+        "groups": [
+          "builtin",
+          "external",
+          [
+            "internal",
+            "parent",
+            "sibling"
+          ],
+          "index"
+        ],
+        "newlines-between": "always"
+      }
+    ]
+  }
 }
