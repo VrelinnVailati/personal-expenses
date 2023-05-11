@@ -1,47 +1,68 @@
-import React, {FC} from "react";
-import {Pie, PieChart, ResponsiveContainer} from "recharts";
+import React, { FC } from "react";
+import { VictoryPie } from "victory";
 
-import {Expenses} from "@/app/page";
+import { Expenses } from "@/app/page";
+import PieChartLabel from "@/app/PieChartLabel";
+
+const REMAINING_TEXT = "Remaining";
 
 type PercentageGraphicProps = {
   expenses: Expenses;
 };
 
-const PercentageGraphic: FC<PercentageGraphicProps> = ({expenses: {income, expenses}}) => {
-  const pieData = expenses.map(({amount, concept}) => {
-    const percentage = Math.floor((amount / income * 100));
+const PercentageGraphic: FC<PercentageGraphicProps> = ({
+  expenses: { income, expenses },
+}) => {
+  let totalSum = 0;
 
-    return {value: percentage, name: concept}
+  const pieData = expenses.map(({ amount, concept }) => {
+    const percentage = Math.floor((amount / income) * 100);
+
+    totalSum += percentage;
+
+    return { y: percentage, x: concept };
   });
+
+  pieData.push({ y: 100 - totalSum, x: REMAINING_TEXT });
+
+  const elementIsRemaining = (label: string) => {
+    return label === REMAINING_TEXT;
+  };
 
   return (
     <>
-      <ResponsiveContainer height="100%">
-        <PieChart width={400} height={100} margin={{top: 5, right: 5, bottom: 5, left: 5}}>
-          <Pie data={pieData} dataKey="value" cx="50%" cy="50%" innerRadius={60} outerRadius={90} fill="#7DCFB6" />
-        </PieChart>
-      </ResponsiveContainer>
-
-      {/*expenses.map(({ concept, amount }) => {
-        const percentage = Math.floor((amount / income) * 100);
-
-        return (
-          <p key={concept}>
-            {`${concept.charAt(0).toUpperCase() + concept.slice(1)}:`}{" "}
-            <span
-              className={
-                percentage >= 50
-                  ? "text-reddish"
-                  : percentage >= 30
-                  ? "text-yellow-400"
-                  : "text-green-500"
+      <VictoryPie
+        width={500}
+        style={{
+          data: {
+            fill: ({ datum }) => {
+              if (elementIsRemaining(datum.x)) {
+                return "blue";
               }
-            >
-              ${`${amount} => ${percentage}%`}
-            </span>
-          </p>
-        );
-      })*/}
+
+              if (datum.y > 50) return "red";
+
+              if (datum.y > 30) return "yellow";
+
+              return "green";
+            },
+            stroke: "#000",
+            strokeWidth: 2,
+          },
+          labels: {
+            fill: "white",
+            fontSize: 20,
+          },
+        }}
+        innerRadius={({ datum }) => (elementIsRemaining(datum.x) ? 115 : 100)}
+        radius={({ datum }) => (elementIsRemaining(datum.x) ? 165 : 150)}
+        data={pieData}
+        labels={({ datum }) => `${datum.x}`}
+        labelComponent={<PieChartLabel />}
+        animate={{
+          duration: 200,
+        }}
+      />
     </>
   );
 };
