@@ -26,10 +26,10 @@ dependencies:
     specifier: 5.0.4
     version: 5.0.4
   uuid:
-    specifier: ^9.0.0
+    specifier: 9.0.0
     version: 9.0.0
   victory:
-    specifier: ^36.6.10
+    specifier: 36.6.10
     version: 36.6.10(react@18.2.0)
 
 devDependencies:
